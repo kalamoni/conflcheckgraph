@@ -1,0 +1,150 @@
+                =============================
+                CHR Confluence Checker Manual
+                =============================
+
+
+1) LIMITATIONS
+
+    a)  The confluence checker only works for programs that do not contain CHR 
+        propagation rules as the propagation history is not considered.
+    
+    b)  The only built-in constraint allowed is equality expressed using the = 
+        operator. This is because the theory for the built-in constraints is 
+        limited to CET.
+    
+    c)  The confluence checker needs to be executed in directory with read and 
+        write access as it writes and reads temporary files to the hard-drive.
+        
+    d)  No syntax check is performed. The program whose confluence should be 
+        checked needs to be a valid CHR program for the Prolog implementations 
+        of CHR. Thus, it is recommended to run the Program in a Prolog 
+        implementation of CHR first.
+
+
+2) PREDICATES AND HOW TO USE THEM
+
+    check_confluence(+FileName)          
+        
+        Checks confluence for a program and writes every non-joinable critical 
+        pair to the output. The path to the program file is given as FileName.
+        This file can be any valid CHR program in one of the common Prolog 
+        implementations of CHR.
+
+        Example:    check_confluence('examples/merge.pl')
+
+
+    check_confluence(+FileName, +RuleName1, +RuleName2)          
+        
+        Checks confluence for two rules in a program. Works exactly like 
+        check_confluence/1 but only considers critical pairs of two (not 
+        necessarily different) rules. The names of those rules are given as 
+        RuleName1 and RuleName2.
+        
+        Examples:   check_confluence('ufd_basic.pl', link, link)
+                    check_confluence('ufd_basic.pl', findnode, findroot)
+
+
+    show_critical_pairs(+FileName)       
+    
+        Prints all non-trivial CPs of all rules  in a file. The path to the 
+        program file is given as FileName. This file can be any valid CHR 
+        program in one of the common Prolog implementations of CHR.
+
+        Example:    show_critical_pairs('examples/merge.pl')
+
+
+    show_critical_pairs(+FileName, +RuleName1, +RuleName2)
+    
+        Prints all non-trivial CPs of two rules  in a file. Works exactly like 
+        show_critical_pairs/1 but only considers  critical pairs of two (not 
+        necessarily different) rules. The names of those rules are given as 
+        RuleName1 and RuleName2.
+        
+        Examples:   show_critical_pairs('ufd_basic.pl', link, link)
+                    show_critical_pairs('ufd_basic.pl', findnode, findroot)
+
+
+    show_all_critical_pairs(+FileName)
+    
+        Prints all CPs of all rules in a file. Works exactly like 
+        show_critical_pairs/1 with the exception, that critical pairs are not 
+        filtered. This means, trivial critical pairs as well as syntactically 
+        equivalent critical pairs and critical pairs which are symmetric are not 
+        removed.
+
+        Example:    show_all_critical_pairs('examples/merge.pl')
+
+
+    show_all_critical_pairs(+FileName, +RuleName1, +RuleName2)
+    
+        Prints all CPs of two rules in a file. Works exactly like 
+        show_critical_pairs/3 with the exception, that critical pairs are not 
+        filtered. This means, trivial critical pairs as well as syntactically 
+        equivalent critical pairs and critical pairs which are symmetric are not 
+        removed.
+
+        Examples:   show_all_critical_pairs('ufd_basic.pl', link, link)
+                    show_all_critical_pairs('ufd_basic.pl', findnode, findroot)
+
+
+
+3) EXTENDING THE CONFLUENCE CHECKER AND USING IT WITH OTHER PROGRAMS
+
+
+    a)  Extending the confluence checker
+    
+        The confluence checker can be extended to implement different a 
+        filtering for the list of critical pairs. For example observable 
+        confluence could be implemented by filtering the list of the critical 
+        pairs accordingly. 
+        In order to do this, the predicate clean_cps/2 has to be changed. There 
+        needs to be a unary predicate my_predicate/1, which decides for a given 
+        critical pair whether it should be considered for the confluence 
+        analysis or not. If now the line 
+        tl_filter(CPSOld, my_predicate, CPSNew), is added to the predicate 
+        clean_cps/2, all critical pairs for which my_predicate fails are 
+        removed from the list CPSOld resulting in the list CPSNew.
+        
+        Using tl_make_set/3 instead of tl_filter/3 with a binary predicate 
+        comparing two critical pairs removes "redundant" critical pairs.
+
+        The existing removals of trivial critical pairs and variants can be 
+        used as an example.
+
+
+    b)  Using the confluence checker from another program
+
+        The confluence checker also provides predicates which produce no output 
+        but return results to their caller. For details see the documentation 
+        in the according source file.
+
+        state_equivalence(+State1, +State2)
+        
+            Succeeds iff the two states are equivalent. 
+        
+
+        critical_pairs(+FileName -NoCps)
+        
+            Like critical_pairs/1 but without output. NoCps is bound to the 
+            number of critical pairs found.
+            
+            
+        critical_pairs(+FileName, RuleName1, RuleName2 -NoCps)
+            
+            Like critical_pairs/3 but without output. NoCps is bound to the 
+            number of critical pairs found.
+
+
+        check_confluence(+FileName -NoCps)
+        
+            Like check_confluence/1 but without output. NoCps is bound to the 
+            number of non-joinable critical pairs found.
+            
+            
+        check_confluence(+FileName, RuleName1, RuleName2 -NoCps)
+            
+            Like check_confluence/3 but without output. NoCps is bound to the 
+            number of non-joinable critical pairs found.
+
+
+
