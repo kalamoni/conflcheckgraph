@@ -857,10 +857,10 @@ pretty_print_to_graph_CAS([cp(S1, S2, rule(_,_,_,_,_), _, O, CAS)|R]) :-
 % overlap of all rules in the CHR program file specified by the string
 % File. This file can be any valid CHR program file.
 
-%% show_me_the_money(File) :- 
-%%     all_critical_pairs(File, CPS), 
-%%     pretty_print(CPS), 
-%%     print_lenght(CPS).
+show_me_the_money(File) :- 
+    all_critical_pairs(File, CPS), 
+    pretty_print(CPS), 
+    print_lenght(CPS).
 
 
 %% saveShit(FielName):-
